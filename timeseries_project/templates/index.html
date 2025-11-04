@@ -1,0 +1,245 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Salary Trend Prediction</title>
+
+    <style>
+        :root {
+            --primary: #2563eb;
+            --primary-hover: #1e40af;
+            --accent: #22c55e;
+            --text-dark: #111827;
+            --text-light: #6b7280;
+            --bg-light: #f9fafb;
+            --card-bg: #ffffff;
+            --border: #e5e7eb;
+        }
+
+        body {
+            font-family: "Inter", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+            background-color: var(--bg-light);
+            color: var(--text-dark);
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .wrapper {
+            width: 100%;
+            max-width: 700px;
+            background-color: var(--card-bg);
+            border-radius: 16px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
+            padding: 40px 50px;
+            box-sizing: border-box;
+            text-align: center;
+        }
+
+        header {
+            margin-bottom: 30px;
+        }
+
+        header h1 {
+            font-size: 1.9rem;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 10px;
+        }
+
+        header p {
+            font-size: 1rem;
+            color: var(--text-light);
+            line-height: 1.5;
+            margin: 0 auto;
+            max-width: 90%;
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+            align-items: stretch;
+            gap: 16px;
+            margin-top: 30px;
+        }
+
+        select,
+        input[type="number"] {
+            padding: 12px 14px;
+            font-size: 16px;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+            transition: border-color 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        select:focus,
+        input[type="number"]:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+            outline: none;
+        }
+
+        button {
+            padding: 12px 0;
+            background-color: var(--primary);
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.25s ease, transform 0.1s ease;
+        }
+
+        button:hover {
+            background-color: var(--primary-hover);
+            transform: translateY(-1px);
+        }
+
+        .error {
+            color: #dc2626;
+            font-weight: 600;
+            margin-top: 20px;
+        }
+
+        .result {
+            margin-top: 35px;
+            padding: 20px;
+            border-radius: 10px;
+            background-color: #f8fafc;
+            border-left: 5px solid transparent;
+            text-align: left;
+        }
+
+        .result.prediction {
+            border-left-color: var(--accent);
+        }
+
+        .result.historical {
+            border-left-color: var(--primary);
+        }
+
+        .result strong {
+            color: var(--text-dark);
+        }
+
+        .price {
+            display: block;
+            font-size: 2.4em;
+            font-weight: 700;
+            color: var(--accent);
+            margin-top: 8px;
+        }
+
+        footer {
+            margin-top: 40px;
+            font-size: 0.9rem;
+            color: var(--text-light);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .footer-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .footer-row a {
+            display: inline-flex;
+            align-items: center;
+            text-decoration: none;
+            color: var(--text-light);
+            transition: color 0.2s ease;
+        }
+
+        .footer-row a:hover {
+            color: var(--primary);
+        }
+
+        .footer-row img {
+            height: 18px;
+            margin-right: 6px;
+            vertical-align: middle;
+        }
+
+        @media (max-width: 600px) {
+            .wrapper {
+                padding: 30px 25px;
+            }
+            header h1 {
+                font-size: 1.6rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="wrapper">
+        <header>
+            <h1>Salary Trend Prediction</h1>
+            <p>
+                Analyze and forecast average salaries from <strong>2005</strong> onwards.  
+                Choose a specific month and year to view the actual or predicted salary using advanced models like 
+                <strong>ARIMA</strong>, <strong>SARIMA</strong>, and <strong>Prophet</strong>.
+            </p>
+        </header>
+
+        <form method="post">
+            {% csrf_token %}
+            <select name="month" required>
+                <option value="" disabled selected>Select Month</option>
+                <option value="1">January</option>
+                <option value="2">February</option>
+                <option value="3">March</option>
+                <option value="4">April</option>
+                <option value="5">May</option>
+                <option value="6">June</option>
+                <option value="7">July</option>
+                <option value="8">August</option>
+                <option value="9">September</option>
+                <option value="10">October</option>
+                <option value="11">November</option>
+                <option value="12">December</option>
+            </select>
+
+            <input type="number" name="year" min="2005" max="2035" placeholder="Enter Year (e.g., 2025)" required />
+
+            <button type="submit">Predict Salary</button>
+        </form>
+
+        {% if error %}
+            <p class="error">{{ error }}</p>
+        {% endif %}
+
+        {% if predicted_price %}
+            <div class="result prediction">
+                For <strong>{{ requested_date }}</strong>, the <b>forecasted average salary</b> is:
+                <span class="price">{{ predicted_price }}</span>
+            </div>
+        {% elif historical_price %}
+            <div class="result historical">
+                For <strong>{{ requested_date }}</strong>, the <b>actual recorded salary</b> was:
+                <span class="price">{{ historical_price }}</span>
+            </div>
+        {% endif %}
+
+        <footer>
+            <div>Built with <strong>Python</strong>, <strong>Machine Learning</strong>, and <strong>Django</strong></div>
+            <div class="footer-row">
+                <span>Made with ❤️ by <strong>Amaresh Hiremath</strong></span>
+                <a href="https://github.com/AMARESH020" target="_blank" rel="noopener noreferrer">
+                    <img src="{% static 'images/github-logo.png' %}" alt="GitHub Logo"> <strong>GitHub</strong>
+                </a>
+            </div>
+        </footer>
+    </div>
+</body>
+</html>

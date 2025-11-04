@@ -1,0 +1,77 @@
+Django Follow Model-View-Controller (MVC) pattern Architecture
+
+Django follows the MVT (Model-View-Template) architectural pattern, which is a variation of the traditional MVC (Model-View-Controller) design pattern. 
+
+
+# MVT (Model-View-Template)
+What it is A design pattern, very similar to MVC, that also splits an app into three parts: the data (Model), the logic that handles requests (View), and the user interface (Template).
+
+# MVC (Model-View-Controller)
+What it is A design pattern that splits an application into three connected parts: the data (Model), the user interface (View), and the logic that handles user input (Controller).
+
+>>django-admin startproject 'project_name'
+
+open Directory in Terminal 
+1.Create an Virtual Env
+>>python -m venv venv
+>>venv\Scripts\activate
+
+2.install django in correct Directory
+>>pip install django
+
+3.run Python project
+>>python manage.py runserver
+
+4.App creation So 
+>>python manage.py startapp 'app_name'
+
+5.In that App file You need to go to Url.py file Instead of admin view we need to change view and urls
+from django.urls import path, include
+from django.contrib import admin
+from salary_prediction import views
+urlpatterns = [
+    path('', views.index, name='home'),
+    path('about', views.about, name='about')
+    
+]
+
+then in views.py\
+from django.shortcuts import render,HttpResponse
+
+
+# Create your views here.
+def index(request):
+    return HttpResponse("Hello, world. You're at the salary prediction index.")
+def about(request):
+    return HttpResponse("Hello, world. You're at the salary prediction about page.")
+
+6.Static and Template
+Created Static and Template So now we need to tell django that for Static go to Static folder and for Template in Template file
+
+7.setting
+So in setting  we need to import os 
+in installed app:
+    'salary_prediction.apps.SalaryPredictionConfig',
+and for Templetes:
+    'DIRS': [os.path.join(BASE_DIR, 'templates')]
+and for Static create new:
+    'STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
+
+8.makemigrations
+>>python manage.py makemigrations
+
+9.Migrate 
+>>python manage.py migrate 
+
+10.createsuperuser
+>>python manage.py createsuperuser
+name: finance
+password: ______
+
+11.Run Server
+>>python manage.py runserver
+
+12.
+>>
+
+
